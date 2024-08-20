@@ -35,6 +35,13 @@ public class UserController {
     @PostMapping("/login")
     public ResponseEntity<UserDTO> loginUser(@RequestParam String userId, @RequestParam String password) {
         Optional<UserDTO> userDTO = userService.loginUser(userId, password);
-        return userDTO.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.status(401).body(null));
+        if (userDTO.isPresent()) {
+            UserDTO user = userDTO.get();
+            user.setPassword(null);  // 비밀번호를 응답에서 제거
+            return ResponseEntity.ok(user);
+        } else {
+            // 로그인 실패 시 오류 메시지 반환
+            return ResponseEntity.status(401).body(null);
+        }
     }
 }
