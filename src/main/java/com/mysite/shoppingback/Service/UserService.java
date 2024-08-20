@@ -1,13 +1,12 @@
 package com.mysite.shoppingback.Service;
 
 import com.mysite.shoppingback.DTO.UserDTO;
-import com.mysite.shoppingback.Entity.User;
+import com.mysite.shoppingback.domain.User;
 import com.mysite.shoppingback.Repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service

@@ -1,6 +1,6 @@
 package com.mysite.shoppingback.Service;
 
-import com.mysite.shoppingback.Entity.Product;
+import com.mysite.shoppingback.domain.Product;
 import com.mysite.shoppingback.Repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

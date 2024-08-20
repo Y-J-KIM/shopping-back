@@ -1,4 +1,4 @@
-package com.mysite.shoppingback.Entity;
+package com.mysite.shoppingback.domain;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

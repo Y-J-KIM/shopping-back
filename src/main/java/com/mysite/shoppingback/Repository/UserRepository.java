@@ -1,6 +1,6 @@
 package com.mysite.shoppingback.Repository;
 
-import com.mysite.shoppingback.Entity.User;
+import com.mysite.shoppingback.domain.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface UserRepository extends JpaRepository<User, Long> {

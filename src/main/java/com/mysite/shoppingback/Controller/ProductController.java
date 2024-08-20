@@ -1,13 +1,10 @@
 package com.mysite.shoppingback.Controller;
 
-import com.mysite.shoppingback.Entity.Product;
+import com.mysite.shoppingback.domain.Product;
 import com.mysite.shoppingback.Service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -32,14 +29,13 @@ public class ProductController {
     }
 
     // 특정 상품 조회
-    @GetMapping("/products/{id}")
-    public String getProductById(@PathVariable Long id, Model model) {
+    @GetMapping("/products/{id}")  // API 경로를 /api로 시작하도록 설정
+    public ResponseEntity<?> getProductById(@PathVariable Long id) {
         Product product = productService.getProductById(id);
         if (product != null) {
-            model.addAttribute("product", product);
-            return "/product/productDetail";
+            return ResponseEntity.ok(product);  // JSON 형식으로 제품 반환
         } else {
-            return "error/404";
+            return ResponseEntity.status(404).body("Product not found");  // 404 상태 코드 반환
         }
     }
 
