@@ -7,7 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class UserService {
@@ -18,17 +20,17 @@ public class UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    public UserDTO createUser(UserDTO userDTO) {
-        User user = new User();
-        user.setUserId(userDTO.getUserId());
-        user.setUsername(userDTO.getUsername());
-        user.setEmail(userDTO.getEmail());
-        user.setPassword("encoded_password"); // 비밀번호 암호화 필요
-        user.setAddress(userDTO.getAddress());
-        userRepository.save(user);
-        userDTO.setId(user.getId());
-        return userDTO;
-    }
+//    public UserDTO createUser(UserDTO userDTO) {
+//        User user = new User();
+//        user.setUserId(userDTO.getUserId());
+//        user.setUsername(userDTO.getUsername());
+//        user.setEmail(userDTO.getEmail());
+//        user.setPassword("encoded_password"); // 비밀번호 암호화 필요
+//        user.setAddress(userDTO.getAddress());
+//        userRepository.save(user);
+//        userDTO.setId(user.getId());
+//        return userDTO;
+//    }
 
 
     public UserDTO registerUser(UserDTO userDTO) {
@@ -38,25 +40,48 @@ public class UserService {
         }
 
         // 비밀번호 암호화
+        String encodedPassword = passwordEncoder.encode(userDTO.getPassword());
+
+        // UserDTO를 User 엔티티로 변환
         User user = new User();
         user.setUserId(userDTO.getUserId());
         user.setUsername(userDTO.getUsername());
         user.setEmail(userDTO.getEmail());
-        user.setPassword(passwordEncoder.encode(userDTO.getPassword()));  // 비밀번호 암호화
+        user.setPassword(encodedPassword);
         user.setAddress(userDTO.getAddress());
 
+        // 역할 설정 (기본적으로 ROLE_USER로 설정)
+        Set<String> roles = userDTO.getRoles();
+        if (roles == null || roles.isEmpty()) {
+            roles = Collections.singleton("ROLE_USER"); // 기본 역할 설정
+        }
+        user.setRoles(roles);
+
+        // 사용자 저장
         userRepository.save(user);
-        userDTO.setId(user.getId());
-        return userDTO;
+
+        // User 엔티티를 UserDTO로 변환하여 반환
+        UserDTO registeredUser = new UserDTO();
+        registeredUser.setId(user.getId());
+        registeredUser.setUserId(user.getUserId());
+        registeredUser.setUsername(user.getUsername());
+        registeredUser.setEmail(user.getEmail());
+        registeredUser.setAddress(user.getAddress());
+        registeredUser.setRoles(user.getRoles());
+        return registeredUser;
     }
 
     public Optional<UserDTO> loginUser(String userId, String password) {
         User user = userRepository.findByUserId(userId);
 
         if (user != null && passwordEncoder.matches(password, user.getPassword())) {
-            return Optional.of(new UserDTO(user.getId(), user.getUserId(), user.getUsername(), user.getEmail(), user.getAddress(), user.getPassword()));
+            return Optional.of(new UserDTO(user.getId(), user.getUserId(), user.getUsername(), user.getEmail(), user.getAddress(), user.getPassword(), user.getRoles()));
         } else {
             return Optional.empty();
         }
+    }
+
+    public User findByUserId(String userId) {
+        return userRepository.findByUserId(userId);
     }
 }

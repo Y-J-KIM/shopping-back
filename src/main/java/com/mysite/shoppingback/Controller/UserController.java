@@ -2,8 +2,18 @@ package com.mysite.shoppingback.Controller;
 
 import com.mysite.shoppingback.DTO.UserDTO;
 import com.mysite.shoppingback.Service.UserService;
+import com.mysite.shoppingback.domain.LoginRequest;
+import com.mysite.shoppingback.domain.User;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,11 +26,11 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @PostMapping
-    public ResponseEntity<UserDTO> createUser(@RequestBody UserDTO userDTO) {
-        UserDTO createdUser = userService.createUser(userDTO);
-        return ResponseEntity.ok(createdUser);
-    }
+//    @PostMapping
+//    public ResponseEntity<UserDTO> createUser(@RequestBody UserDTO userDTO) {
+//        UserDTO createdUser = userService.createUser(userDTO);
+//        return ResponseEntity.ok(createdUser);
+//    }
 
     @PostMapping("/register")
     public ResponseEntity<UserDTO> registerUser(@RequestBody UserDTO userDTO) {
@@ -32,16 +42,31 @@ public class UserController {
         }
     }
 
+//    @PostMapping("/login")
+//    public ResponseEntity<UserDTO> loginUser(@RequestParam String userId, @RequestParam String password) {
+//        Optional<UserDTO> userDTO = userService.loginUser(userId, password);
+//        if (userDTO.isPresent()) {
+//            UserDTO user = userDTO.get();
+//            //user.setPassword(null);  // 비밀번호를 응답에서 제거
+//            return ResponseEntity.ok(user);
+//        } else {
+//            // 로그인 실패 시 오류 메시지 반환
+//            return ResponseEntity.status(401).body(null);
+//        }
+//    }
+
     @PostMapping("/login")
-    public ResponseEntity<UserDTO> loginUser(@RequestParam String userId, @RequestParam String password) {
-        Optional<UserDTO> userDTO = userService.loginUser(userId, password);
+    public ResponseEntity<UserDTO> loginUser(@RequestBody LoginRequest loginRequest) {
+        Optional<UserDTO> userDTO = userService.loginUser(loginRequest.getUserId(), loginRequest.getPassword());
         if (userDTO.isPresent()) {
             UserDTO user = userDTO.get();
-            user.setPassword(null);  // 비밀번호를 응답에서 제거
+            // user.setPassword(null);  // 비밀번호를 응답에서 제거
             return ResponseEntity.ok(user);
         } else {
             // 로그인 실패 시 오류 메시지 반환
-            return ResponseEntity.status(401).body(null);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
         }
     }
+
+
 }
