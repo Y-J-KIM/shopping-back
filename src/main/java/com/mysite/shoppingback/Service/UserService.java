@@ -84,4 +84,24 @@ public class UserService {
     public User findByUserId(String userId) {
         return userRepository.findByUserId(userId);
     }
+
+    public Optional<UserDTO> findUserById(String userId) {
+// 사용자 정보를 데이터베이스에서 조회
+        return userRepository.findById(Long.valueOf(userId))
+                .map(this::convertToDTO);
+    }
+
+    // UserEntity를 UserDTO로 변환하는 메서드
+    private UserDTO convertToDTO(User user) {
+        UserDTO userDTO = new UserDTO();
+        userDTO.setUserId(user.getUserId());
+        userDTO.setUsername(user.getUsername());
+        // 기타 필요한 필드 설정
+        return userDTO;
+    }
+
+    Optional<User> findById(Long id) {
+        return userRepository.findById(id);
+    }
+
 }
