@@ -3,6 +3,7 @@ package com.mysite.shoppingback.Controller;
 import com.mysite.shoppingback.DTO.CartDTO;
 import com.mysite.shoppingback.DTO.CartItemDTO;  // CartItemDTO를 추가해야 합니다.
 import com.mysite.shoppingback.Service.CartService;
+import org.hibernate.cache.spi.support.AbstractReadWriteAccess;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,11 +22,20 @@ public class CartController {
         return ResponseEntity.ok(cart);
     }
 
-    // 장바구니에 항목 추가
+//    // 장바구니에 항목 추가
+//    @PostMapping("/add")
+//    public ResponseEntity<CartDTO> addItemToCart(@RequestBody CartItemDTO cartItemDTO) {
+//        CartDTO cart = cartService.addItemToCart(cartItemDTO.getUserId(), cartItemDTO.getProductId(), cartItemDTO.getQuantity());
+//        return ResponseEntity.ok(cart);
+//    }
     @PostMapping("/add")
-    public ResponseEntity<CartDTO> addItemToCart(@RequestBody CartItemDTO cartItemDTO) {
-        CartDTO cart = cartService.addItemToCart(cartItemDTO.getUserId(), cartItemDTO.getProductId(), cartItemDTO.getQuantity());
-        return ResponseEntity.ok(cart);
+    public ResponseEntity<?> addItemToCart(@RequestParam Long userId,@RequestParam Long productId, @RequestBody int item) {
+        try {
+            cartService.addItemToCart(userId,productId, item);
+            return ResponseEntity.ok().build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     // 장바구니 항목 삭제
