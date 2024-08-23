@@ -100,6 +100,17 @@ public class UserService {
         return userDTO;
     }
 
+    public Optional<User> updateUser(Long id, User updatedUser) {
+        return userRepository.findById(id)
+                .map(user -> {
+                    user.setUsername(updatedUser.getUsername());
+                    user.setEmail(updatedUser.getEmail());
+                    user.setPassword(updatedUser.getPassword());
+                    user.setAddress(updatedUser.getAddress());
+                    return userRepository.save(user);
+                });
+    }
+
     Optional<User> findById(Long id) {
         return userRepository.findById(id);
     }
