@@ -10,6 +10,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -28,8 +29,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests((authorizeRequests)-> authorizeRequests
                 .requestMatchers("/api/**").permitAll()
                 .requestMatchers("/api/myorder").authenticated()
-                .anyRequest().permitAll()
-                );
+                .anyRequest().permitAll())
+                .sessionManagement((sessionManagement)->sessionManagement.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED));
         return http.build();
     }
 
@@ -38,7 +39,4 @@ public class SecurityConfig {
 
         return new BCryptPasswordEncoder();
     }
-
-
-
 }

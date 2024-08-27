@@ -118,7 +118,7 @@ public class UserController {
         }
 
         // 세션 쿠키를 클라이언트 측에서 제거
-        Cookie cookie = new Cookie("JSESSIONID", null);
+        Cookie cookie = new Cookie("SESSIONID", null);
         cookie.setPath("/"); // 전체 경로에서 쿠키를 사용할 수 있게 설정
         cookie.setMaxAge(0); // 쿠키 만료 시간 설정 (즉시 만료)
         response.addCookie(cookie);
