@@ -81,16 +81,6 @@ public class UserService {
         }
     }
 
-    public User findByUserId(String userId) {
-        return userRepository.findByUserId(userId);
-    }
-
-    public Optional<UserDTO> findUserById(String userId) {
-// 사용자 정보를 데이터베이스에서 조회
-        return userRepository.findById(Long.valueOf(userId))
-                .map(this::convertToDTO);
-    }
-
     // UserEntity를 UserDTO로 변환하는 메서드
     private UserDTO convertToDTO(User user) {
         UserDTO userDTO = new UserDTO();
@@ -111,8 +101,20 @@ public class UserService {
                 });
     }
 
-    Optional<User> findById(Long id) {
-        return userRepository.findById(id);
+    User findById(Long id) {
+        return userRepository.findById(id).orElse(null);
     }
 
+    public UserDTO getUserById(Long id) {
+        Optional<User> user = userRepository.findById(id);
+        if (user.isPresent()) {
+            return convertToDTO(user.get());
+        } else {
+            return null;
+        }
+    }
+
+    public User findByUsername(String username) {
+        return userRepository.findByUsername(username);
+    }
 }

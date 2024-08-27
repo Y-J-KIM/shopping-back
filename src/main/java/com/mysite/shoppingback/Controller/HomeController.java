@@ -2,6 +2,8 @@ package com.mysite.shoppingback.Controller;
 
 import com.mysite.shoppingback.DTO.UserDTO;
 import com.mysite.shoppingback.Service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CookieValue;
@@ -21,22 +23,17 @@ public class HomeController {
         this.userService = userService;
     }
 
-    @GetMapping("/")
-    public ResponseEntity<?> home(@CookieValue(value = "userId", defaultValue = "") String userId) {
-        if (userId.isEmpty()) {
-            // 쿠키에 유저 정보가 없으면 401 Unauthorized 반환
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not logged in");
-        }
+    @GetMapping("/home")
+    public ResponseEntity<String> home(HttpServletRequest request) {
+        HttpSession session = request.getSession(false); // false: 세션이 없으면 null 반환
 
-        // 유저 ID로 사용자 정보 조회
-        Optional<UserDTO> userDTO = userService.findUserById(userId);
-        if (userDTO.isPresent()) {
-            // 로그인된 상태라면 유저 정보 반환
-            return ResponseEntity.ok(userDTO.get());
+        if (session != null && session.getAttribute("userId") != null) {
+            String userId = (String) session.getAttribute("userId");
+            return ResponseEntity.ok("Welcome, " + userId + "!");
         } else {
-            // 유효하지 않은 유저 ID인 경우 401 Unauthorized 반환
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid user");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Please log in.");
         }
     }
+
 }
 

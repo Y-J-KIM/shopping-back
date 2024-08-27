@@ -12,4 +12,17 @@ public class CartDTO {
     private Long id;
     private Long userId;
     private List<CartItemDTO> items;
+
+    public CartDTO(Long id, Long userId, List<CartItemDTO> items) {
+        this.id = id;
+        this.userId = userId;
+        this.items = items;
+    }
+
+    public CartDTO() {
+        
+    }
+
+    public CartDTO(Long userId, List<CartItemDTO> cartItems) {
+    }
 }

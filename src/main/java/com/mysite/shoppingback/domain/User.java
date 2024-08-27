@@ -24,6 +24,10 @@ public class User {
     private String email;
     private String address;
 
+    // 사용자와 장바구니 사이의 관계를 설정합니다.
+    @OneToOne(mappedBy = "user")
+    private Cart cart;
+
     // 역할 필드
     @ElementCollection(targetClass = String.class)
     @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
