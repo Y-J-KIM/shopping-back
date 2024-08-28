@@ -18,7 +18,9 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(unique = true)
     private String userId;  // 고유한 유저 식별자
+
     private String username;
     private String password;
     private String email;

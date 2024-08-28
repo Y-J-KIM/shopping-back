@@ -28,7 +28,7 @@ public class CartController {
 
     // 사용자 ID로 장바구니 조회
     @GetMapping("/{userId}")
-    public ResponseEntity<Cart> getCart(@PathVariable String userId) {
+    public ResponseEntity<Cart> getCart(@PathVariable Long userId) {
         Cart cart = cartService.getCartByUserId(userId);
         return ResponseEntity.ok(cart);
     }
@@ -36,16 +36,24 @@ public class CartController {
     @PostMapping("/{userId}/items")
     public ResponseEntity<?> addItemToCart(
             HttpSession session,
-            @PathVariable("userId") String userId,
+            @PathVariable("userId") Long userId,  // 사용자 엔티티의 id
             @RequestBody CartItem item) {
         try {
             // 세션에서 사용자 ID 확인
-            String sessionUserId = (String) session.getAttribute("userId");
+            Long sessionUserId = (Long) session.getAttribute("userId");  // 세션에 저장된 사용자 ID
+            System.out.println("sessionUserId: " + sessionUserId);
+            System.out.println("userId: " + userId);
             if (sessionUserId == null || !sessionUserId.equals(userId)) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid session or user ID");
             }
 
-            // 장바구니에 아이템 추가
+            // CartItem 유효성 검증
+            if (item == null || item.getProduct() == null || item.getProduct().getId() == null || item.getQuantity() <= 0) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid CartItem: product or quantity is missing");
+            }
+
+
+            // 새로운 메서드 호출
             cartService.addItemToCart(userId, item);
             return ResponseEntity.ok("Item added successfully");
         } catch (Exception e) {
@@ -55,28 +63,28 @@ public class CartController {
 
     // 장바구니 아이템 수량 업데이트
     @PutMapping("/{userId}/items/{itemId}")
-    public ResponseEntity<Void> updateCartItemQuantity(@PathVariable String userId, @PathVariable Long itemId, @RequestParam int quantity) {
+    public ResponseEntity<Void> updateCartItemQuantity(@PathVariable Long userId, @PathVariable Long itemId, @RequestParam int quantity) {
         cartService.updateCartItemQuantity(userId, itemId, quantity);
         return ResponseEntity.ok().build();
     }
 
     // 장바구니에서 아이템 제거
     @DeleteMapping("/{userId}/items/{itemId}")
-    public ResponseEntity<Void> removeCartItem(@PathVariable String userId, @PathVariable Long itemId) {
+    public ResponseEntity<Void> removeCartItem(@PathVariable Long userId, @PathVariable Long itemId) {
         cartService.removeCartItem(userId, itemId);
         return ResponseEntity.ok().build();
     }
 
     // 비로그인 상태에서 세션 데이터 동기화 (추가적인 구현 필요)
     @PostMapping("/{userId}/sync")
-    public ResponseEntity<Void> syncCart(@PathVariable String userId) {
+    public ResponseEntity<Void> syncCart(@PathVariable Long userId) {
         cartService.syncCart(userId);
         return ResponseEntity.ok().build();
     }
 
     // 로그인 후 장바구니 로드
     @GetMapping("/{userId}/load")
-    public ResponseEntity<Cart> loadCartAfterLogin(@PathVariable String userId) {
+    public ResponseEntity<Cart> loadCartAfterLogin(@PathVariable Long userId) {
         Cart cart = cartService.loadCartAfterLogin(userId);
         return ResponseEntity.ok(cart);
     }

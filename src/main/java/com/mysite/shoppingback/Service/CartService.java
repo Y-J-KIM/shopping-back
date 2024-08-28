@@ -11,8 +11,6 @@ import com.mysite.shoppingback.domain.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @Service
 public class CartService {
 
@@ -29,16 +27,26 @@ public class CartService {
     private UserRepository userRepository; // User 엔티티 조회를 위한 레포지토리
 
     // 사용자 ID로 장바구니를 조회
-    public Cart getCartByUserId(String userId) {
-        User user = userRepository.findByUserId(userId); // userId를 통해 User 객체 조회
-        if (user == null) {
-            throw new RuntimeException("User not found");
-        }
+    public Cart getCartByUserId(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found with ID: " + userId)); // userId를 통해 User 객체 조회
         return cartRepository.findByUser(user); // User 객체를 통해 Cart 조회
     }
 
+    public void addItemToCart(Long userId, CartItem item) {
+        if (item != null && item.getProduct() != null) {
+            Long productId = item.getProduct().getId();
+            int quantity = item.getQuantity();
+
+            // 기존 메서드 호출
+            addItemToCart(userId, productId, quantity);
+        } else {
+            throw new IllegalArgumentException("Invalid CartItem: product or quantity is missing");
+        }
+    }
+
     // 장바구니에 아이템 추가
-    public void addItemToCart(String userId, Long productId, int quantity) {
+    public void addItemToCart(Long userId, Long productId, int quantity) {
         try {
             Cart cart = cartRepository.findByUserId(userId);
             if (cart == null) {
@@ -73,17 +81,13 @@ public class CartService {
         }
     }
 
-
-    // 사용자 ID로 장바구니를 가져오는 메서드
-    public Cart getCartByUserId(Long userId) {
-        return cartRepository.findByUser_Id(userId);
-    }
-
-
-
+//    // 사용자 ID로 장바구니를 가져오는 메서드
+//    public Cart getCartByUserId(Long userId) {
+//        return cartRepository.findByUser_Id(userId);
+//    }
 
     // 장바구니 아이템 수량 업데이트
-    public void updateCartItemQuantity(String userId, Long itemId, int quantity) {
+    public void updateCartItemQuantity(Long userId, Long itemId, int quantity) {
         Cart cart = getCartByUserId(userId); // 유저에 맞는 장바구니 조회
         if (cart != null) {
             CartItem item = cartItemRepository.findByIdAndCartId(itemId, cart.getId());
@@ -97,7 +101,7 @@ public class CartService {
     }
 
     // 장바구니에서 아이템 제거
-    public void removeCartItem(String userId, Long itemId) {
+    public void removeCartItem(Long userId, Long itemId) {
         Cart cart = getCartByUserId(userId); // 유저에 맞는 장바구니 조회
         if (cart != null) {
             CartItem item = cartItemRepository.findByIdAndCartId(itemId, cart.getId());
@@ -111,14 +115,12 @@ public class CartService {
     }
 
     // 비로그인 상태에서 세션 데이터 동기화
-    public void syncCart(String userId) {
+    public void syncCart(Long userId) {
         // 세션에 저장된 데이터를 사용자의 장바구니와 동기화하는 로직 작성
     }
 
     // 로그인 후 장바구니 로드
-    public Cart loadCartAfterLogin(String userId) {
+    public Cart loadCartAfterLogin(Long userId) {
         return getCartByUserId(userId);
     }
-
-
 }
