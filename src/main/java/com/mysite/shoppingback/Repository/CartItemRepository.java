@@ -14,9 +14,9 @@ import java.util.Optional;
 //}
 
 public interface CartItemRepository extends JpaRepository<CartItem, Long> {
-    List<CartItem> findByCartId(Long cartId);
-    Optional<CartItem> findByCartAndProduct(Cart cart, Product product);
+    // 장바구니 ID와 아이템 ID로 CartItem을 찾는 메서드
+    CartItem findByIdAndCartId(Long itemId, Long cartId);
 
-    @Query("SELECT c FROM CartItem c WHERE c.userId = :userId")
-    List<CartItem> findByUserId(Long userId);
+
+    CartItem findByProductIdAndCartId(Long productId, Long id);
 }

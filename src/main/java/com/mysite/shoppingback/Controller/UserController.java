@@ -67,6 +67,8 @@ public class UserController {
             // 세션에 사용자 정보를 저장
             HttpSession session = request.getSession();
             session.setAttribute("user", user);  // 'user'는 세션에서 사용자 정보를 가져올 때 사용할 키입니다.
+            System.out.println("저장된 아이디: "+ user.getUserId());
+            session.setAttribute("userId", user.getUserId());
 
             // 쿠키에 세션 ID를 저장 (JSESSIONID는 기본적으로 서블릿 컨테이너가 자동으로 관리)
             // 이 부분은 생략할 수 있습니다. JSESSIONID는 컨테이너에서 자동으로 관리됩니다.

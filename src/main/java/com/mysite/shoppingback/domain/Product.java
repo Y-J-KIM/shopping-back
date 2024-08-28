@@ -36,6 +36,9 @@ public class Product {
     @JsonIgnore
     private User user;
 
+    public Product(Long productId) {
+    }
+
 //    @OneToMany(mappedBy = "product")
 //    @JsonIgnore
 //    private List<CartItem> cart_items = new ArrayList<>();
