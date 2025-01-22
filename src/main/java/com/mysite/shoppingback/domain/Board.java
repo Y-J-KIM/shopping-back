@@ -26,8 +26,9 @@ public class Board extends BaseEntity {
     @Column(length = 2000, nullable = false)
     private String content; //내용
 
-    @Column(length = 50, nullable = false)
-    private String writer;  //글쓴이
+    @ManyToOne(fetch = FetchType.LAZY)  // User 엔티티와 연관 관계 설정
+    @JoinColumn(name = "user_id", nullable = false) // 외래키 컬럼
+    private User writer;  //글쓴이 (User 엔티티 참조)
 
     @OneToMany(mappedBy = "board",
             cascade = CascadeType.ALL,

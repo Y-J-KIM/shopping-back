@@ -6,6 +6,7 @@ import com.mysite.shoppingback.DTO.BoardListReplyCountDTO;
 import com.mysite.shoppingback.domain.Board;
 import com.mysite.shoppingback.domain.QBoard;
 import com.mysite.shoppingback.domain.QReply;
+import com.mysite.shoppingback.domain.QUser;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.Projections;
@@ -59,6 +60,7 @@ public class BoardSearchImpl extends QuerydslRepositorySupport implements BoardS
 
         QBoard board = QBoard.board;
         JPQLQuery<Board> query = from(board);
+        QUser user = QUser.user;
 
         if( (types != null && types.length > 0) && keyword != null ){ //검색 조건과 키워드가 있다면
 
@@ -74,7 +76,7 @@ public class BoardSearchImpl extends QuerydslRepositorySupport implements BoardS
                         booleanBuilder.or(board.content.contains(keyword));
                         break;
                     case "w":  //글쓴이
-                        booleanBuilder.or(board.writer.contains(keyword));
+                        booleanBuilder.or(user.username.contains(keyword));
                         break;
                 }
             }//end for
@@ -100,6 +102,7 @@ public class BoardSearchImpl extends QuerydslRepositorySupport implements BoardS
         //보드와 댓글이 둘다 필요해서 Q 클래스로 만듬
         QBoard board = QBoard.board;
         QReply reply = QReply.reply;
+        QUser user = QUser.user;
 
         JPQLQuery<Board> query = from(board); //select board
         //댓글과 함께 가져오기 위해 레프트 조인(댓글이 없더라도 게시글은 나옴)
@@ -121,7 +124,7 @@ public class BoardSearchImpl extends QuerydslRepositorySupport implements BoardS
                         booleanBuilder.or(board.content.contains(keyword));
                         break;
                     case "w":  //글쓴이
-                        booleanBuilder.or(board.writer.contains(keyword));
+                        booleanBuilder.or(user.username.contains(keyword));
                         break;
                 }
             }//end for
@@ -152,6 +155,7 @@ public class BoardSearchImpl extends QuerydslRepositorySupport implements BoardS
 
         QBoard board = QBoard.board;
         QReply reply = QReply.reply;
+        QUser user = QUser.user;
 
         JPQLQuery<Board> boardJPQLQuery = from(board); //select * from board
         boardJPQLQuery.leftJoin(reply).on(reply.board.eq(board));// 왼쪽 조인 게시글이 같을때 댓글
@@ -170,7 +174,7 @@ public class BoardSearchImpl extends QuerydslRepositorySupport implements BoardS
                         booleanBuilder.or(board.content.contains(keyword));
                         break;
                     case "w":  //글쓴이
-                        booleanBuilder.or(board.writer.contains(keyword));
+                        booleanBuilder.or(user.username.contains(keyword));
                         break;
                 }
             }//end for
@@ -193,7 +197,7 @@ public class BoardSearchImpl extends QuerydslRepositorySupport implements BoardS
             BoardListAllDTO dto = BoardListAllDTO.builder()
                     .bno(board1.getBno())
                     .title(board1.getTitle())
-                    .writer(board1.getWriter())
+                    .writer(String.valueOf(board1.getWriter()))
                     .regDate(board1.getRegDate())
                     .replyCount(replyCount)
                     .build();

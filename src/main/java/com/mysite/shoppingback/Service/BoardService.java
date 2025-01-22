@@ -4,6 +4,8 @@ package com.mysite.shoppingback.Service;
 
 import com.mysite.shoppingback.DTO.*;
 import com.mysite.shoppingback.domain.Board;
+import com.mysite.shoppingback.domain.User;
+import jakarta.validation.constraints.NotEmpty;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -33,7 +35,7 @@ public interface BoardService {
                 .bno(boardDTO.getBno())
                 .title(boardDTO.getTitle())
                 .content(boardDTO.getContent())
-                .writer(boardDTO.getWriter())
+                .writer(convertToEntity(boardDTO.getWriter()))
                 .build();
 
         if(boardDTO.getFileNames() != null){
@@ -45,12 +47,31 @@ public interface BoardService {
         return board;
     }
 
+    private User convertToEntity(UserDTO userDTO) {
+        User user = new User();
+        user.setUserId(userDTO.getUserId());
+        user.setUsername(userDTO.getUsername());
+        // 기타 필요한 필드 설정
+        return user;
+    }
+
+    private UserDTO convertToDTO(User user) {
+        if (user == null) {
+            return null; // user가 null인 경우 처리
+        }
+        return UserDTO.builder()
+                .userId(user.getUserId())
+                .username(user.getUsername())
+                // 필요한 추가 필드 설정
+                .build();
+    }
+
     default BoardDTO entityToDto(Board board) {
         BoardDTO boardDTO = BoardDTO.builder()
                 .bno(board.getBno())
                 .title(board.getTitle())
                 .content(board.getContent())
-                .writer(board.getWriter())
+                .writer(convertToDTO(board.getWriter()))
                 .regDate(board.getRegDate())
                 .modDate(board.getModDate())
                 .build();

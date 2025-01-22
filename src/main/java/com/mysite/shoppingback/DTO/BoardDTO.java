@@ -24,7 +24,7 @@ public class BoardDTO {
     @NotEmpty
     private String content; //필요
     @NotEmpty
-    private String writer;  //필요
+    private UserDTO writer;  //필요
 
     private LocalDateTime regDate;
     private LocalDateTime modDate;

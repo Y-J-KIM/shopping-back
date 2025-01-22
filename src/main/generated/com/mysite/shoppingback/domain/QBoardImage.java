@@ -48,7 +48,7 @@ public class QBoardImage extends EntityPathBase<BoardImage> {
 
     public QBoardImage(Class<? extends BoardImage> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.board = inits.isInitialized("board") ? new QBoard(forProperty("board")) : null;
+        this.board = inits.isInitialized("board") ? new QBoard(forProperty("board"), inits.get("board")) : null;
     }
 
 }

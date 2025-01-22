@@ -13,9 +13,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.security.Principal;
-import java.util.List;
-
 @RestController
 @RequestMapping("/api/cart")
 public class CartController {
@@ -43,6 +40,8 @@ public class CartController {
             Long sessionUserId = (Long) session.getAttribute("userId");  // 세션에 저장된 사용자 ID
             System.out.println("sessionUserId: " + sessionUserId);
             System.out.println("userId: " + userId);
+
+            // 세션에 저장된 사용자 ID와 요청한 userId 비교
             if (sessionUserId == null || !sessionUserId.equals(userId)) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid session or user ID");
             }
@@ -51,7 +50,6 @@ public class CartController {
             if (item == null || item.getProduct() == null || item.getProduct().getId() == null || item.getQuantity() <= 0) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid CartItem: product or quantity is missing");
             }
-
 
             // 새로운 메서드 호출
             cartService.addItemToCart(userId, item);

@@ -82,7 +82,7 @@ public class UserService {
     }
 
     // UserEntity를 UserDTO로 변환하는 메서드
-    private UserDTO convertToDTO(User user) {
+    public UserDTO convertToDTO(User user) {
         UserDTO userDTO = new UserDTO();
         userDTO.setUserId(user.getUserId());
         userDTO.setUsername(user.getUsername());
@@ -115,6 +115,10 @@ public class UserService {
     }
 
     public User findByUsername(String username) {
-        return userRepository.findByUsername(username);
+        User user = userRepository.findByUsername(username);
+        if (user == null) {
+            throw new RuntimeException("User not found with username: " + username);
+        }
+        return user;
     }
 }

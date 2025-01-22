@@ -3,7 +3,10 @@ package com.mysite.shoppingback.Controller;
 import com.mysite.shoppingback.DTO.BoardDTO;
 import com.mysite.shoppingback.DTO.PageRequestDTO;
 import com.mysite.shoppingback.DTO.PageResponseDTO;
+import com.mysite.shoppingback.DTO.UserDTO;
 import com.mysite.shoppingback.Service.BoardService;
+import com.mysite.shoppingback.Service.UserService;
+import com.mysite.shoppingback.domain.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,6 +33,7 @@ public class BoardController {
     private String uploadPath;
 
     private final BoardService boardService;
+    private final UserService userService;
 
     //@PreAuthorize("hasRole('USER')")
     @GetMapping("/register")
@@ -40,8 +44,8 @@ public class BoardController {
     // 게시글 목록 조회 (페이징, 검색 포함)
     @GetMapping("/list")
     public ResponseEntity<PageResponseDTO<BoardDTO>> list(
-            @RequestParam int page,
-            @RequestParam int size,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) String keyword) {
 
         PageRequestDTO pageRequestDTO = PageRequestDTO.builder()
@@ -58,13 +62,22 @@ public class BoardController {
     public ResponseEntity<Long> register(
             @RequestParam("title") String title,
             @RequestParam("content") String content,
-            @RequestParam("writer") String writer,
+            @RequestParam("writer") String writerUsername,
             @RequestParam(value = "image", required = false) MultipartFile image) {
+
+        // 유저 정보를 UserService에서 가져옴
+        User writer = userService.findByUsername(writerUsername);  // 사용자 이름으로 유저 찾기
+        if (writer == null) {
+            return ResponseEntity.badRequest().build();  // 유저가 없으면 오류 처리
+        }
+
+        // User → UserDTO 변환
+        UserDTO writerDTO = userService.convertToDTO(writer);
 
         BoardDTO boardDTO = BoardDTO.builder()
                 .title(title)
                 .content(content)
-                .writer(writer)
+                .writer(writerDTO) // UserDTO로 변환하여 writer에 설정
                 .build();
 
         if (image != null && !image.isEmpty()) {
